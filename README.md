@@ -54,9 +54,9 @@ I built a cache-first Shipping Rate API behind Shopify’s CarrierService:
 
 ---
 
-## 4. Architecture
+4. Architecture
 
-![Architecture](docs/architecture.png)
+![Architecture](https://github.com/Poby350H/-BigTent-shipping-api-portfolio/blob/main/bd-shipping-rate.drawio%20(1).png)
 
 
 High-level flow:
