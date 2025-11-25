@@ -150,6 +150,7 @@ Checkout latency and availability do not depend on Cloud SQL.
   without any code changes or redeployments.
 
 - Resilience: Checkout does not depend on Cloud SQL, and cache snapshots
+  in GCS allow the service to recover quickly from failures or restarts.
 
 ---
 
@@ -159,5 +160,4 @@ Checkout latency and availability do not depend on Cloud SQL.
 - [Design decisions](docs/decisions.md)
 
 ****
-  in GCS allow the service to recover quickly from failures or restarts.
 
