@@ -56,7 +56,7 @@ I built a cache-first Shipping Rate API behind Shopify’s CarrierService:
 
 4. Architecture
 
-![Architecture](https://github.com/Poby350H/-BigTent-shipping-api-portfolio/blob/main/bd-shipping-rate.drawio%20(1).png)
+![Architecture](https://github.com/Poby350H/-BigTent-shipping-api-portfolio/blob/main/docs/shipping_rate-architecture.png)
 
 
 High-level flow:
@@ -88,7 +88,7 @@ High-level flow:
 5. The current cache is periodically saved to **Cloud Storage** as
    snapshots. Snapshots can be:
    - Used for **DR/restore**.
-   - Exported asynchronously to **Cloud SQL** for reporting and analysis.
+   - Exported asynchronously to Cloud SQL for reporting and analysis.
 
 Checkout latency and availability do not depend on Cloud SQL.
 
