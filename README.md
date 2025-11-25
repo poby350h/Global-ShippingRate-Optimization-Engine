@@ -92,6 +92,7 @@ E. The current cache is periodically saved to **Cloud Storage** as
 
 Checkout latency and availability do not depend on Cloud SQL.
 
+---
 
 5. Tech Stack
 
@@ -101,6 +102,7 @@ Checkout latency and availability do not depend on Cloud SQL.
   Cloud Storage (cache snapshots), Cloud SQL (PostgreSQL – analytics only)  
 - Security & Auth: IAM Service Account, HMAC verification, environment-based secrets
 
+---
 
 6. Key Features
 
@@ -148,5 +150,14 @@ Checkout latency and availability do not depend on Cloud SQL.
   without any code changes or redeployments.
 
 - Resilience: Checkout does not depend on Cloud SQL, and cache snapshots
+
+---
+
+8.Further reading
+
+- [API examples](docs/api_examples.md)  
+- [Design decisions](docs/decisions.md)
+
+****
   in GCS allow the service to recover quickly from failures or restarts.
 
