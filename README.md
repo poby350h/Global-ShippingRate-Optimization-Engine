@@ -1,6 +1,4 @@
-# Multi-region, cache-first Shipping Rate Engine for Shopify Checkout (DB-free critical path)
-
-# Shipping Rate API — Portfolio Case Study
+# Portfolio Case Study : Multi-region, cache-first Shipping Rate Engine for Shopify Checkout (DB-free critical path)
 
 1. Overview
 
