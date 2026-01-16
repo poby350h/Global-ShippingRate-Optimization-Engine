@@ -1,4 +1,5 @@
-# -BigTent-shipping-api-portfolio
+# B2B Shipping Rate Automation System
+
 Multi-region Cloud Run shipping rate service for Shopify checkout (DB-free critical path)
 
 
