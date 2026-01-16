@@ -1,13 +1,10 @@
-# B2B Shipping Rate Automation System
+# Multi-region, cache-first Shipping Rate Engine for Shopify Checkout (DB-free critical path)
 
-Multi-region Cloud Run shipping rate service for Shopify checkout (DB-free critical path)
-
-
-# Shipping Rate API (bd-shipping-api) — Portfolio Case Study
+# Shipping Rate API — Portfolio Case Study
 
 1. Overview
 
-This repository documents a production-grade Shipping Rate APII designed, implemented, and operated for a Shopify store.
+This repository documents a production-grade Shipping Rate API designed, implemented, and operated for a Shopify store.
 
 The goal was to calculate complex international shipping rates in real time, while keeping the checkout path fast and highly available.
 
@@ -29,6 +26,7 @@ Shopify's built-in shipping settings were not flexible enough to handle:
 At the same time:
 
 - The checkout flow is extremely latency-sensitive.
+- Any blocking dependency (DB, external API, or slow network call) could directly impact revenue.
 - Database outages or long queries must not block checkout.
 - Non-developer staff needed to update shipping rules via google sheet without redeploying code.
 
@@ -47,7 +45,7 @@ I built a cache-first Shipping Rate API behind Shopify’s CarrierService:
 - Cloud Scheduler triggers a `/force-reload` endpoint every morning  
   to refresh the cache from Google Sheets.
 - Cloud Storage snapshots + Cloud SQL (PostgreSQL) used Only for
-  DR and analytics — not in the critical checkout path.
+  DR and analytics — Never in the critical checkout path.
 - Google IAM Service Account + Application Default Credentials + Secret Manager   
   for secure access to Sheets / Storage.
 - Shopify HMAC verification to ensure all incoming requests are
@@ -72,21 +70,20 @@ C. The Shipping Rate API:
    - Looks up rates from the **in-memory cache**.
    - Returns rates to Shopify in the expected format.
      
-D. Shipping rules are loaded and refreshed as follows:
+D. Shipping rules lifecycle:
 
-- On service startup (init):
-  - The API first tries to load the latest cache snapshot from Google Cloud Storage (GCS).
-  - If no snapshot exists, it falls back to Google Sheets as the source of truth,
-    then saves a new snapshot back to GCS.
-  
-- On scheduled reload (Cloud Scheduler → `/force-reload`):
-  - The API always pulls the latest rules from Google Sheets,
-    overwrites the in-memory cache, and persists a fresh snapshot to GCS.
+- On service startup:
+  - Load latest cache snapshot from GCS if available.
+  - If missing, pull from Google Sheets and create a new snapshot.
 
-- On optional manual reload (admin → `/force-reload`):
-  - When shipping prices or rules change and need to be applied immediately,
-    an admin can trigger `/force-reload` to force-pull from Google Sheets and
-    update both the in-memory cache and the GCS snapshot.
+- On scheduled reload (Cloud Scheduler → /force-reload):
+  - Always pull from Google Sheets.
+  - Overwrite in-memory cache.
+  - Persist a fresh snapshot to GCS.
+
+- On manual reload (admin → /force-reload):
+  - Immediate rule update without redeploy.
+  - Updates both in-memory cache and GCS snapshot.
     
 E. The current cache is periodically saved to **Cloud Storage** as
    snapshots. Snapshots can be:
@@ -99,11 +96,11 @@ Checkout latency and availability do not depend on Cloud SQL.
 
 5. Tech Stack
 
-- Backend:Python(Flask) REST API integrated with Shopify CarrierService  
+- Backend: Python(Flask) REST API integrated with Shopify CarrierService  
 - Infra: Google Cloud (Google Cloud Run, Cloud Load Balancing, Cloud Scheduler)  
 - Data: Google Sheets (gspread + Application Default Credentials),  
   Cloud Storage (cache snapshots), Cloud SQL (PostgreSQL – analytics only)  
-- Security & Auth: IAM Service Account, HMAC verification, environment-based secrets
+- Security & Auth: IAM Service Account,Secret Manager,HMAC verification, environment-based secrets
 
 ---
 
@@ -144,9 +141,8 @@ Checkout latency and availability do not depend on Cloud SQL.
 - Reliability: Since launch, there have been no user-visible incidents
   attributable to this shipping rate service in production.
 
-- Performance: Internal logs show end-to-end response times for shipping
-  rate requests consistently under 100 ms, keeping checkout latency impact
-  negligible.
+- Performance: Internal logs show end-to-end response times consistently under 100 ms
+  ( p95 < 120 ms), keeping checkout latency impact negligible.
 
 - Operational agility: Shipping rules can be updated by the operations team
   directly in Google Sheets and applied immediately via `/force-reload`,
