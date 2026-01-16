@@ -11,11 +11,16 @@
 - Improves availability and resilience to regional incidents.
 
 3. Google Sheets as the source of truth
-- Operations can edit shipping rules directly in a spreadsheet.
-- No redeploy is needed for most business changes.
-- Scheduler and manual `/force-reload` keep cache in sync.
 
-4. Snapshots and analytics
-- Cache snapshots are stored in GCS for DR.
-- Snapshots can be exported asynchronously to Cloud SQL for analysis.
-- Checkout latency does not depend on Cloud SQL.
+- Shipping rules are managed by the operations team directly in Google Sheets.
+- Each rule category is separated into multiple tabs
+  (e.g., country rules, weight tiers, bundle mappings, promotions, fixed pricing, etc.).
+- The API parses and loads all tabs into structured in-memory objects at startup or reload.
+- No redeploy is required for most business rule changes.
+- Scheduler and manual `/force-reload` keep the runtime cache fully synchronized with Sheets.
+
+4. Snapshots, DR, and analytics decoupling
+
+- Cache snapshots are stored in GCS for fast restore and disaster recovery.
+- Snapshots can be exported asynchronously to Cloud SQL for analytics and reporting.
+- Checkout latency and availability never depend on Cloud SQL.
